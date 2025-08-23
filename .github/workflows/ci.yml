@@ -2,14 +2,15 @@ name: CI Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]  # Trigger on 'master' branch
   pull_request:
-    branches: [ main ]
+    branches: [ master ]  # Trigger on PR to 'master'
 
 jobs:
   test:
     name: Run Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # Use GitHub's default Ubuntu runner
+
     services:
       mysql:
         image: mysql:5.7
@@ -25,41 +26,45 @@ jobs:
           --health-retries=5
 
     container:
-      image: maven:3.6.3-jdk-11
+      image: maven:3.6.3-jdk-11  # Use Maven container (based on Debian Bullseye)
 
     steps:
+      # Step 1: Checkout the code from the repository
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Wait for MySQL to be ready
+      # Step 2: Fix APT repositories and install MySQL client (for Debian Buster compatibility)
+      - name: Fix apt repositories for buster (archive)
         run: |
-          until mysql -hmysql -uroot -pecommerce -e "SELECT 1;" &> /dev/null; do
-            echo "Waiting for MySQL..."
-            sleep 5
-          done
+          # Replace 'deb.debian.org' with 'archive.debian.org' for buster
+          sudo sed -i 's/deb.debian.org/archive.debian.org/g' /etc/apt/sources.list
+          sudo sed -i 's/security.debian.org/archive.debian.org/g' /etc/apt/sources.list
+          
+          # Disable expired key check for archived repositories
+          sudo apt-get -o Acquire::Check-Valid-Until=false update -y
+          sudo apt-get install -y default-mysql-client
 
-      - name: Install mysql-client
-        run: |
-          apt-get update -y
-          apt-get install -y default-mysql-client
-
+      # Step 3: Recreate database
       - name: Recreate database
         run: |
           export MYSQL_PWD=ecommerce
           db/creation/recreate_everything -d ecommerce -h mysql
 
+      # Step 4: Run tests
       - name: Run Tests
         run: |
           mvn test
           mkdir -p target/site/jacoco
           cat target/site/jacoco/index.html | grep -o 'Total[^%]*%'
 
+      # Step 5: Upload JaCoCo XML report as artifact
       - name: Upload JaCoCo XML Report
         uses: actions/upload-artifact@v4
         with:
           name: jacoco-report
           path: target/site/jacoco/jacoco.xml
 
+      # Step 6: Cache Maven dependencies to speed up builds
       - name: Cache Maven packages
         uses: actions/cache@v4
         with:
@@ -70,26 +75,30 @@ jobs:
   coverage:
     name: Generate Coverage Report
     runs-on: ubuntu-latest
-    needs: test
+    needs: test  # Wait for the 'test' job to complete
 
     container:
       image: registry.gitlab.com/haynes/jacoco2cobertura:1.0.7
 
     steps:
+      # Step 1: Checkout code
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Step 2: Download JaCoCo report artifact from 'test' job
       - name: Download JaCoCo Report
         uses: actions/download-artifact@v4
         with:
           name: jacoco-report
           path: target/site/jacoco
 
+      # Step 3: Convert JaCoCo report to Cobertura format
       - name: Convert JaCoCo to Cobertura
         run: |
           python /opt/cover2cover.py target/site/jacoco/jacoco.xml $GITHUB_WORKSPACE/src/main/java/ > target/site/cobertura.xml
           python /opt/source2filename.py target/site/cobertura.xml
 
+      # Step 4: Upload Cobertura coverage report
       - name: Upload Cobertura Coverage Report
         uses: actions/upload-artifact@v4
         with:
