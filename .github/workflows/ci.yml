@@ -1,0 +1,97 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: ecommerce
+          MYSQL_DATABASE: ecommerce
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    container:
+      image: maven:3.6.3-jdk-11
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Wait for MySQL to be ready
+        run: |
+          until mysql -hmysql -uroot -pecommerce -e "SELECT 1;" &> /dev/null; do
+            echo "Waiting for MySQL..."
+            sleep 5
+          done
+
+      - name: Install mysql-client
+        run: |
+          apt-get update -y
+          apt-get install -y default-mysql-client
+
+      - name: Recreate database
+        run: |
+          export MYSQL_PWD=ecommerce
+          db/creation/recreate_everything -d ecommerce -h mysql
+
+      - name: Run Tests
+        run: |
+          mvn test
+          mkdir -p target/site/jacoco
+          cat target/site/jacoco/index.html | grep -o 'Total[^%]*%'
+
+      - name: Upload JaCoCo XML Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: target/site/jacoco/jacoco.xml
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: maven-
+
+  coverage:
+    name: Generate Coverage Report
+    runs-on: ubuntu-latest
+    needs: test
+
+    container:
+      image: registry.gitlab.com/haynes/jacoco2cobertura:1.0.7
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download JaCoCo Report
+        uses: actions/download-artifact@v4
+        with:
+          name: jacoco-report
+          path: target/site/jacoco
+
+      - name: Convert JaCoCo to Cobertura
+        run: |
+          python /opt/cover2cover.py target/site/jacoco/jacoco.xml $GITHUB_WORKSPACE/src/main/java/ > target/site/cobertura.xml
+          python /opt/source2filename.py target/site/cobertura.xml
+
+      - name: Upload Cobertura Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: cobertura-report
+          path: target/site/cobertura.xml
