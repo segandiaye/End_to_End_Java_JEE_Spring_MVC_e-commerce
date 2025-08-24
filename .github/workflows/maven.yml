@@ -37,12 +37,12 @@ jobs:
       - name: Fix apt repositories for buster (archive)
         run: |
           # Replace 'deb.debian.org' with 'archive.debian.org' for buster
-          sudo sed -i 's/deb.debian.org/archive.debian.org/g' /etc/apt/sources.list
-          sudo sed -i 's/security.debian.org/archive.debian.org/g' /etc/apt/sources.list
+          sed -i 's/deb.debian.org/archive.debian.org/g' /etc/apt/sources.list
+          sed -i 's/security.debian.org/archive.debian.org/g' /etc/apt/sources.list
           
           # Disable expired key check for archived repositories
-          sudo apt-get -o Acquire::Check-Valid-Until=false update -y
-          sudo apt-get install -y default-mysql-client
+          apt-get -o Acquire::Check-Valid-Until=false update -y
+          apt-get install -y default-mysql-client
 
       # Step 3: Recreate database
       - name: Recreate database
