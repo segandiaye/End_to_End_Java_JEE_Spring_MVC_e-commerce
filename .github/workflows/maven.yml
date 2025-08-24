@@ -50,6 +50,8 @@ jobs:
           export MYSQL_PWD=ecommerce
           chmod +x db/creation/recreate_everything
           db/creation/recreate_everything -d ecommerce -h 127.0.0.1 || echo "DB script failed or skipped"
+          netstat -plnt | grep 3306
+          mysql -uroot -pecommerce
 
       - name: Wait for MySQL to be ready
         run: |
