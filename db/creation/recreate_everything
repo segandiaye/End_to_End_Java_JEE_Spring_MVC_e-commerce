@@ -29,7 +29,7 @@ if [ -z "$db_name" ]; then
 fi
 
 # mysql_cmd="mysql --user=root"
-mysql_cmd="mysql -uroot -p$MYSQL_PWD"
+mysql_cmd="mysql -utestuser -p$MYSQL_PWD"
 
 # Only add host if provided
 [ -n "$host" ] && mysql_cmd="$mysql_cmd -h$host"
