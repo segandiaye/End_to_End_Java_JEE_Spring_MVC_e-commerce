@@ -14,7 +14,7 @@ jobs:
       mysql:
         image: mysql:5.7
         env:
-          MYSQL_ROOT_PASSWORD: rootpassword
+          # MYSQL_ROOT_PASSWORD: rootpassword
           MYSQL_DATABASE: ecommerce
           MYSQL_USER: testuser
           MYSQL_PASSWORD: testpass
@@ -27,7 +27,7 @@ jobs:
           --health-retries=3
 
     env:
-      SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/ecommerce
+      SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/ecommerce
       SPRING_DATASOURCE_USERNAME: testuser
       SPRING_DATASOURCE_PASSWORD: testpass
 
@@ -44,7 +44,7 @@ jobs:
       - name: Wait for MySQL to be ready
         run: |
           for i in {1..100}; do
-            if mysql -hlocalhost -utestuser -ptestpass -e "SELECT 1" > /dev/null 2>&1; then
+            if mysql -h127.0.0.1 -utestuser -ptestpass -e "SELECT 1" > /dev/null 2>&1; then
               echo "MySQL is ready!"
               break
             fi
