@@ -49,15 +49,12 @@ jobs:
           # Disable expired key check for archived repositories
           apt-get -o Acquire::Check-Valid-Until=false update -y
           apt-get install -y default-mysql-client
-          apt-get install -y net-tools
 
       # Recreate database
       - name: Recreate database
         run: |
           export MYSQL_PWD=testpass
           echo "DB creation OK ......"
-          netstat -plnt | grep 3306
-          echo "netstat : OK ......"
           mysql -utestuser -ptestpass
           echo "DB connect OK ........"
           SHOW DATABASES
