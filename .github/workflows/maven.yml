@@ -2,9 +2,9 @@ name: CI Pipeline
 
 on:
   push:
-    branches: [ master ]  # Trigger on 'master' branch
+    branches: [ main ]  # Trigger on 'main' branch
   pull_request:
-    branches: [ master ]  # Trigger on PR to 'master'
+    branches: [ main ]  # Trigger on PR to 'main'
 
 jobs:
   test:
