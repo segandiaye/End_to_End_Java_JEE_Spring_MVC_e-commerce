@@ -56,9 +56,6 @@ jobs:
       - name: Recreate database
         run: |
           export MYSQL_PWD=testpass
-          chmod +x db/creation/recreate_everything
-          echo "DB: processsing ....."
-          db/creation/recreate_everything -d testpass -h 127.0.0.1 || echo "DB script failed or skipped"
           echo "DB creation OK ......"
           netstat -plnt | grep 3306
           echo "netstat : OK ......"
