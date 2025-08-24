@@ -36,13 +36,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up JDK 11
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '11'
+        uses: actions/checkout@v4
 
       - name: Wait for MySQL to be ready
         run: |
@@ -51,7 +45,7 @@ jobs:
               echo "MySQL is ready!"
               break
             fi
-            echo "⏳ Waiting for MySQL..."
+            echo "Waiting for MySQL..."
             sleep 5
           done
 
