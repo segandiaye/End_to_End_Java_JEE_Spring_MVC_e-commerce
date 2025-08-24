@@ -14,7 +14,7 @@ jobs:
 
     services:
       mysql:
-        image: mysql:8.0
+        image: mysql:5.7
         env:
           MYSQL_ROOT_PASSWORD: rootpassword
           MYSQL_DATABASE: testdb
@@ -47,7 +47,7 @@ jobs:
         run: |
           echo "DB: check MysQl ......"
           for i in {1..100}; do
-            if mysql -h127.0.0.1 -uroot -pecommerce -e "SELECT 1" > /dev/null 2>&1; then
+            if mysql -h127.0.0.1 -utestuser -ptestpass -e "SELECT 1" > /dev/null 2>&1; then
               echo " MySQL is ready !"
               break
             fi
@@ -57,10 +57,3 @@ jobs:
           mysql -utestuser -ptestpass
           SHOW DATABASES 
           exit
-
-      - name: Build with Maven
-        run: mvn clean verify
-        env:
-          SPRING_DATASOURCE_URL: ${{ env.SPRING_DATASOURCE_URL }}
-          SPRING_DATASOURCE_USERNAME: ${{ env.SPRING_DATASOURCE_USERNAME }}
-          SPRING_DATASOURCE_PASSWORD: ${{ env.SPRING_DATASOURCE_PASSWORD }}
