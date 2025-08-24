@@ -1,19 +1,18 @@
-name: CI Pipeline
+name: CI
 
 on:
   push:
-    branches: [ main ]  # Trigger on 'main' branch
+    branches: [ main, master ]  # Trigger on 'main and master' branch
   pull_request:
-    branches: [ main ]  # Trigger on PR to 'main'
+    branches: [ main, master ]  # Trigger on PR to 'main and master'
 
 jobs:
-  test:
-    name: Run Tests
-    runs-on: ubuntu-latest  # Use GitHub's default Ubuntu runner
+  build:
+    runs-on: ubuntu-latest
 
     services:
       mysql:
-        image: mysql:5.7
+        image: mysql:8.0
         env:
           MYSQL_DATABASE: ecommerce
           MYSQL_USER: testuser
@@ -31,32 +30,26 @@ jobs:
       SPRING_DATASOURCE_USERNAME: testuser
       SPRING_DATASOURCE_PASSWORD: testpass
 
-    container:
-      image: maven:3.6.3-jdk-11  # Use Maven container (based on Debian Bullseye)
-
     steps:
-      # Checkout the code from the repository
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
-      # Fix APT repositories and install MySQL client (for Debian Buster compatibility)
-      - name: Fix apt repositories for buster (archive)
-        run: |
-          # Replace 'deb.debian.org' with 'archive.debian.org' for buster
-          sed -i 's/deb.debian.org/archive.debian.org/g' /etc/apt/sources.list
-          sed -i 's/security.debian.org/archive.debian.org/g' /etc/apt/sources.list
-          
-          # Disable expired key check for archived repositories
-          apt-get -o Acquire::Check-Valid-Until=false update -y
-          apt-get install -y default-mysql-client
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
 
-      # Recreate database
-      - name: Recreate database
+      - name: Wait for MySQL to be ready
         run: |
-          export MYSQL_PWD=testpass
-          echo "DB creation OK ......"
-          mysql -utestuser -ptestpass
-          echo "DB connect OK ........"
-          SHOW DATABASES
-          echo "DB: exit ....."
-          exit
+          for i in {1..100}; do
+            if mysql -h127.0.0.1 -utestuser -ptestpass -e "SELECT 1" > /dev/null 2>&1; then
+              echo "MySQL is ready!"
+              break
+            fi
+            echo "⏳ Waiting for MySQL..."
+            sleep 5
+          done
+
+      - name: Build with Maven
+        run: mvn clean verify
