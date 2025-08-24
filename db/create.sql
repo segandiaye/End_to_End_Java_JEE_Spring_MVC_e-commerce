@@ -1,0 +1,5 @@
+SET NAMES utf8;
+
+DROP DATABASE IF EXISTS ecommerce;
+CREATE DATABASE ecommerce CHARACTER SET utf8;
+USE ecommerce;
