@@ -43,6 +43,7 @@ jobs:
           # Disable expired key check for archived repositories
           apt-get -o Acquire::Check-Valid-Until=false update -y
           apt-get install -y default-mysql-client
+          apt-get install -y netstat
 
       # Step 3: Recreate database
       - name: Recreate database
