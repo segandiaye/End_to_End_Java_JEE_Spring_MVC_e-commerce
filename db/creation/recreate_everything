@@ -6,29 +6,19 @@ set -o errexit
 usage() {
     echo "
 Usage:
-$0 [Options]
+$0 -d <db_name> [-h <host>] [-p <port>]
 
-Examples:
-$0 -d ecommerce                           (run as 'root', auth local: unix socket)
-$0 -d ecommerce_test                      (run as 'root', auth local: unix socket)
-"""
+Example:
+$0 -d ecommerce -h 127.0.0.1 -p 3306
+"
 }
 
 while getopts ":d:h:p:" option; do
     case "${option}" in
-        d)
-            db_name=${OPTARG}
-            ;;
-	h)
-            host=${OPTARG}
-            ;;
-        p)
-            port=${OPTARG}
-            ;;
-        *)
-            usage
-            exit 3
-            ;;
+        d) db_name=${OPTARG} ;;
+        h) host=${OPTARG} ;;
+        p) port=${OPTARG} ;;
+        *) usage; exit 3 ;;
     esac
 done
 shift $((OPTIND-1))
@@ -38,18 +28,13 @@ if [ -z "$db_name" ]; then
    exit 3
 fi
 
-db_dir_path=$(dirname "$0")
-
 mysql_cmd="mysql --user=root"
 
-if [ -n "$host" ]; then
-    mysql_cmd="$mysql_cmd --host=$host"
-fi
+# Only add host if provided
+[ -n "$host" ] && mysql_cmd="$mysql_cmd --host=$host"
+[ -n "$port" ] && mysql_cmd="$mysql_cmd -P $port"
 
-if [ -n "$port" ]; then
-    mysql_cmd="$mysql_cmd -P $port"
-fi
-
+# Use MYSQL_PWD for password-less login (CI)
 $mysql_cmd -e "SET NAMES utf8;"
-$mysql_cmd -e "drop database if exists $db_name;"
-$mysql_cmd -e "create database $db_name CHARACTER SET utf8;"
+$mysql_cmd -e "DROP DATABASE IF EXISTS \`$db_name\`;"
+$mysql_cmd -e "CREATE DATABASE \`$db_name\` CHARACTER SET utf8;"

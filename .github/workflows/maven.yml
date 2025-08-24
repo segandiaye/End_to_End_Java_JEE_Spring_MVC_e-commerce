@@ -48,6 +48,7 @@ jobs:
       - name: Recreate database
         run: |
           export MYSQL_PWD=ecommerce
+          chmod +x db/creation/recreate_everything
           db/creation/recreate_everything -d ecommerce -h 127.0.0.1 || echo "DB script failed or skipped"
 
       - name: Wait for MySQL to be ready
