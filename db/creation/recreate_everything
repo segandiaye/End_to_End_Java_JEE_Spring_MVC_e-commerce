@@ -28,7 +28,8 @@ if [ -z "$db_name" ]; then
    exit 3
 fi
 
-mysql_cmd="mysql --user=root"
+# mysql_cmd="mysql --user=root"
+mysql_cmd="mysql --user=root --password=$MYSQL_PWD"
 
 # Only add host if provided
 [ -n "$host" ] && mysql_cmd="$mysql_cmd --host=$host"
