@@ -50,9 +50,13 @@ jobs:
         run: |
           export MYSQL_PWD=ecommerce
           chmod +x db/creation/recreate_everything
+          echo "DB: processsing ....."
           db/creation/recreate_everything -d ecommerce -h 127.0.0.1 || echo "DB script failed or skipped"
+          echo "DB creation OK ......"
           netstat -plnt | grep 3306
+          echo "netstat : OK ......"
           mysql -uroot -pecommerce
+          echo "DB connect OK ........"
 
       - name: Wait for MySQL to be ready
         run: |
