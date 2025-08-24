@@ -15,7 +15,6 @@ jobs:
       mysql:
         image: mysql:5.7
         env:
-          MYSQL_ROOT_PASSWORD: rootpassword
           MYSQL_DATABASE: ecommerce
           MYSQL_USER: testuser
           MYSQL_PASSWORD: testpass
@@ -59,6 +58,8 @@ jobs:
           echo "DB creation OK ......"
           netstat -plnt | grep 3306
           echo "netstat : OK ......"
-          mysql -uroot -ptestpass
+          mysql -utestuser -ptestpass
           echo "DB connect OK ........"
           SHOW DATABASES
+          echo "DB: exit ....."
+          exit
