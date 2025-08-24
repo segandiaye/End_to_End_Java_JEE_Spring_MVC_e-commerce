@@ -73,33 +73,3 @@ jobs:
           path: ~/.m2
           key: maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: maven-
-
-  coverage:
-    name: Generate Coverage Report
-    runs-on: ubuntu-latest
-    needs: test
-
-    container:
-      image: registry.gitlab.com/haynes/jacoco2cobertura:1.0.7
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Download JaCoCo Report
-        uses: actions/download-artifact@v4
-        with:
-          name: jacoco-report
-          path: target/site/jacoco
-
-      - name: Convert JaCoCo to Cobertura
-        run: |
-          python /opt/cover2cover.py target/site/jacoco/jacoco.xml $GITHUB_WORKSPACE/src/main/java/ > target/site/cobertura.xml
-          python /opt/source2filename.py target/site/cobertura.xml
-
-      - name: Upload Cobertura Coverage Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: cobertura-report
-          path: target/site/cobertura.xml
-        
