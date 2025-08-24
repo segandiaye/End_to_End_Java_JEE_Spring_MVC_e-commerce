@@ -15,14 +15,14 @@
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-       <bean id="datasource"
-			class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-			<property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
-			<property name="url" value="jdbc:mysql://localhost:3306/e-commerce"></property>
-			<property name="username" value=""></property>
-			<property name="password" value=""></property>
+       <bean id="datasource" 
+			class="org.springframework.jdbc.datasource.DriverManagerDataSource"> 
+			<property name="driverClassName" value="org.mariadb.jdbc.Driver"></property>
+			<property name="url" value="jdbc:mariadb://mysql:3306/ecommerce"></property>
+			<property name="username" value="root"></property>
+			<property name="password" value="ecommerce"></property>
 		</bean>
-		<bean id="persistenceUnitManager"
+		<bean id="persistenceUnitManager" 
 			class="org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager">
 			<property name="defaultDataSource" ref="datasource"></property>
 			<property name="persistenceXmlLocations">
@@ -30,8 +30,8 @@
 				<value>classpath*:META-INF/persistence.xml</value>
 			</list>
 			</property>
-		</bean>
-		<bean id="entityManagerFactory"
+		</bean> 
+		<bean id="entityManagerFactory" 
 			class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 			<property name="persistenceUnitManager" ref="persistenceUnitManager"></property>
 			<property name="persistenceUnitName" value="UP_BOUTIQUE"></property>
@@ -39,20 +39,20 @@
 		<bean id="transactionManager"
 			class="org.springframework.orm.jpa.JpaTransactionManager">
 			<property name="entityManagerFactory" ref="entityManagerFactory"></property>
-			</bean>
-			<tx:annotation-driven mode="aspectj" transaction-manager="transactionManager" />
-			<context:annotation-config></context:annotation-config>
-
+		</bean>
+		<tx:annotation-driven />
+		<context:annotation-config></context:annotation-config>
+			
 		<bean  id="dao" class="org.sid.ecommerce.dao.BoutiqueDaoImpl"></bean>
 		<bean id="metier" class="org.sid.ecommerce.metier.BoutiqueMetierImpl">
-		<property name="dao" ref="dao"></property>
+		    <property name="dao" ref="dao"></property>
 		</bean>
-
+		
 		<!-- spring security -->
 		<sec:http>
 			<sec:intercept-url pattern="/produits/**" access="ROLE_ADMIN_PROD"/>
-			<sec:intercept-url pattern="/categories/**" access="ROLE_ADMIN_CAT"/>
-			<sec:intercept-url pattern="/adminCat/**" access="ROLE_ADMIN_CAT"/>
+			<!--<sec:intercept-url pattern="/categories/**" access="ROLE_ADMIN_CAT"/>
+			<sec:intercept-url pattern="/adminCat/**" access="ROLE_ADMIN_CAT"/>-->
 			<sec:intercept-url pattern="/adminProd/**" access="ROLE_ADMIN_PROD"/>
 			<!-- <sec:form-login login-page="/login" default-target-url="/produits/index" authentication-failure-url="/login" />  -->
 			<sec:form-login login-page="/login" default-target-url="/adminProd/index" authentication-failure-url="/login" />
@@ -62,18 +62,18 @@
 		<sec:authentication-manager>
 			<sec:authentication-provider>
 				<sec:password-encoder hash="md5"></sec:password-encoder>
-				<sec:jdbc-user-service
-				data-source-ref="datasource"
+				<sec:jdbc-user-service 
+				data-source-ref="datasource" 
 				users-by-username-query="select user_name,password, actived
-				from users where user_name=?"
+				from users where user_name=?" 
 				authorities-by-username-query="select u.user_name, r.roleName from users u, role r
 				where u.user_id = r.user_id and u.user_name =? " />
-
-				<!-- <sec:user-service>
+				
+				<!-- <sec:user-service>   
 				<sec:user name="admin1" password="admin1" authorities="ROLE_ADMIN_PROD"/>
 				<sec:user name="admin2" authorities="ROLE_ADMIN_CAT,ROLE_ADMIN_PROD" password="admin2"/>
 				</sec:user-service>  -->
-
+				
 			</sec:authentication-provider>
 		</sec:authentication-manager>
 </beans>

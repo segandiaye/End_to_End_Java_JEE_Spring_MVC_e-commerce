@@ -8,11 +8,6 @@
 		<f:form modelAttribute="categorie" action="saveCat"  method="post" enctype="multipart/form-data">
 			<table class="tabStyle1">
 				<tr>
-					<td>ID Catégorie :</td>
-					<td>${categorie.idCategorie}<f:input  path="idCategorie"/></td>
-					<td><f:errors path="idCategorie" cssClass="errors"></f:errors> </td>
-				</tr>
-				<tr>
 					<td>Nom Catégorie</td>
 					<td><f:input path="nomCategorie"/></td>
 					<td><f:errors path="nomCategorie" cssClass="errors"></f:errors></td>
@@ -40,7 +35,6 @@
 <div id="tabCategories" class="cadre">
 		<table class="tabStyle1">
 			<tr>
-				<th>ID</th>
 				<th>NOM CAT</th>
 				<th>DESCRIPTION</th>
 				<th>PHOTO</th>
@@ -48,8 +42,6 @@
 			</tr>
 			<c:forEach items="${categories}" var="cat">
 			<tr>
-				<td>${cat.idCategorie}</td> 
-				<td>${cat.idCategorie}</td>
 				<td>${cat.nomCategorie}</td>
 				<td>${cat.description}</td>
 				<td><img src="photoCat?idCat=${cat.idCategorie}" height="100px" width="100px"></td>

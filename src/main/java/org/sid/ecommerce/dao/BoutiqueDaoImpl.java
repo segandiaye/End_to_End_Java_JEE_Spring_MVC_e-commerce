@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.*;
 
 import org.sid.ecommerce.entities.*;
+
 public class BoutiqueDaoImpl implements IBoutiqueDao {
 	
 		@PersistenceContext
@@ -14,6 +15,7 @@ public class BoutiqueDaoImpl implements IBoutiqueDao {
 		@Override
 		public Long ajouterCategorie(Categorie c) {
 			em.persist(c);
+			em.flush(); 
 			return c.getIdCategorie();
 		}
 		

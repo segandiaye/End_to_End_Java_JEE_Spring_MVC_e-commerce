@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/adminCat")
 @SessionAttributes("editedCat")
 public class AdminCategoriesController {
+
 		@Autowired
 		private IAdminCategoriesMetier metier;
 		

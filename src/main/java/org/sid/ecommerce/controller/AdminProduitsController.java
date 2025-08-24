@@ -26,6 +26,7 @@ public class AdminProduitsController {
 		model.addAttribute("categories", metier.listCategories());
 		return "produits";
 		}
+
 		@RequestMapping(value="/saveProd")
 		public String saveProd(@Valid Produit p,BindingResult bindingResult,
 			Model model,MultipartFile file) throws IOException{

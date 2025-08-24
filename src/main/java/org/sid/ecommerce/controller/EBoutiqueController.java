@@ -3,7 +3,8 @@ import java.io.File;
 import java.io.FileInputStream;
 
 import org.sid.ecommerce.entities.Produit;
-import org.sid.ecommerce.metier.BoutiqueMetierImpl;
+//import org.sid.ecommerce.metier.BoutiqueMetierImpl;
+import org.sid.ecommerce.metier.IAdminCategoriesMetier;
 import org.sid.ecommerce.entities.Panier;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +15,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
+
 @Controller
 @SessionAttributes("panier")
 public class EBoutiqueController {
+
 	@Autowired
-	private BoutiqueMetierImpl metier;
+	private IAdminCategoriesMetier metier;
+
 	@RequestMapping("/")
 	public String index(Model model){
 		if(model.asMap().get("panier")==null){
@@ -26,14 +30,15 @@ public class EBoutiqueController {
 		}
 		model.addAttribute("categories", metier.listCategories());
 		model.addAttribute("produits", metier.produitsSelectionnes());
-		return "index";}
+		return "index";
+	}
 
 	@RequestMapping("/produitsParCat")
 	public String produitsParCat(@RequestParam Long idCat,Model
 			model){
 		model.addAttribute("categories", metier.listCategories());
-		model.addAttribute("produits", 
-				metier.produitsParCategorie(idCat));
+		model.addAttribute("produits",
+		metier.produitsParCategorie(idCat));
 		return "index";
 	}
 	@RequestMapping("/chercherProduits")

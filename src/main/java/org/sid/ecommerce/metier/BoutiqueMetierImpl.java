@@ -7,8 +7,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.sid.ecommerce.dao.*;
 import org.sid.ecommerce.entities.*;
 
+//import org.springframework.beans.factory.annotation.Autowired;
+
 @Transactional
-public class BoutiqueMetierImpl implements IAdminCategoriesMetier{
+public class BoutiqueMetierImpl implements IAdminCategoriesMetier {
+	
 	private IBoutiqueDao dao;
 	
 	public void setDao(IBoutiqueDao dao) {
