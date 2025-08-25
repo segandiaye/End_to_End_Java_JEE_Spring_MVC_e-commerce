@@ -15,6 +15,7 @@ jobs:
         image: mysql:5.7
         env:
           MYSQL_ROOT_PASSWORD: rootpassword
+          MYSQL_ROOT_HOST: '%'
           MYSQL_DATABASE: ecommerce
           MYSQL_USER: testuser
           MYSQL_PASSWORD: testpass

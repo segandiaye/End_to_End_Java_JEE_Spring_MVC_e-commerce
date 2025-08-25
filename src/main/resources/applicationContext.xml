@@ -19,8 +19,8 @@
 			class="org.springframework.jdbc.datasource.DriverManagerDataSource"> 
 			<property name="driverClassName" value="com.mysql.cj.jdbc.Driver"></property>
 			<property name="url" value="jdbc:mysql://127.0.0.1:3306/ecommerce"></property>
-			<property name="username" value="rootpassword"></property>
-			<property name="password" value=""></property>
+			<property name="username" value="testuser"></property>
+			<property name="password" value="testpass"></property>
 		</bean>
 		<bean id="persistenceUnitManager" 
 			class="org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager">
