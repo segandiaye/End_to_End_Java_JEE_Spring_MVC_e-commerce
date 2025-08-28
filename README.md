@@ -1,3 +1,3 @@
 # Description
 
-This project describes step by step how to build an e-commerce site with Java, JEE, Hibernate, JPA, Maven and Spring MVC
+End-to-end e-commerce site built with Java, JEE, Hibernate, JPA, Maven, and Spring MVC.
